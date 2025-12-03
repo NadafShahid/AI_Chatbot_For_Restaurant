@@ -1,0 +1,427 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant API - User Management Documentation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            height: 100vh;
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            overflow-y: auto;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        }
+        .sidebar h2 {
+            margin-top: 0;
+            color: #ecf0f1;
+            font-size: 18px;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+        .sidebar li {
+            margin: 10px 0;
+        }
+        .sidebar a {
+            color: #bdc3c7;
+            text-decoration: none;
+            display: block;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+        .sidebar a:hover, .sidebar a.active {
+            background: #34495e;
+            color: #ecf0f1;
+        }
+        .main-content {
+            margin-left: 270px;
+            padding: 30px;
+            max-width: calc(100% - 320px);
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #2c3e50;
+        }
+        .endpoint {
+            background: #f8f9fa;
+            border-left: 4px solid #007bff;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .method {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 4px;
+            color: white;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .method.GET { background: #28a745; }
+        .method.POST { background: #007bff; }
+        .method.PUT { background: #ffc107; color: #212529; }
+        .method.DELETE { background: #dc3545; }
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+        .response {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success { border-left: 4px solid #28a745; }
+        .error { border-left: 4px solid #dc3545; }
+        .warning { border-left: 4px solid #ffc107; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #dee2e6;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background: #f8f9fa;
+            font-weight: bold;
+        }
+        .required {
+            color: #dc3545;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Navigation</h2>
+        <ul>
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#endpoints">API Endpoints</a></li>
+            <li><a href="#create-user">POST /api/users</a></li>
+            <li><a href="#get-users">GET /api/users</a></li>
+            <li><a href="#get-user">GET /api/users/:id</a></li>
+            <li><a href="#update-user">PUT /api/users/:id</a></li>
+            <li><a href="#delete-user">DELETE /api/users/:id</a></li>
+            <li><a href="#testing">Testing</a></li>
+            <li><a href="#response-format">Response Format</a></li>
+            <li><a href="#error-handling">Error Handling</a></li>
+            <li><a href="#notes">Notes</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <div class="container">
+        <h1 id="overview">Restaurant API - User Management</h1>
+
+        <p>This documentation covers the User Management APIs for the Restaurant Backend API. All endpoints are prefixed with <code>/api/users</code>.</p>
+
+        <h2>Base URL</h2>
+        <p><code>http://localhost:3000/api/users</code></p>
+
+        <h2>Authentication</h2>
+        <p>Currently, no authentication is required for these endpoints. In production, implement proper authentication middleware.</p>
+
+        <h2 id="endpoints">API Endpoints</h2>
+
+        <!-- Create User -->
+        <div class="endpoint" id="create-user">
+            <h3><span class="method POST">POST</span>/api/users</h3>
+            <p>Create a new user</p>
+
+            <h4>Request Body</h4>
+            <div class="code-block">
+{
+    "name": "John Doe",
+    "email": "john@example.com",
+    "phone": "+1234567890",
+    "role": "customer",
+    "password": "password123"
+}
+            </div>
+
+            <table>
+                <tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr>
+                <tr><td>name</td><td>string</td><td class="required">Yes</td><td>User's full name</td></tr>
+                <tr><td>email</td><td>string</td><td class="required">Yes</td><td>Unique email address</td></tr>
+                <tr><td>phone</td><td>string</td><td>No</td><td>Phone number</td></tr>
+                <tr><td>role</td><td>string</td><td>No</td><td>User role (default: 'customer')</td></tr>
+                <tr><td>password</td><td>string</td><td class="required">Yes</td><td>User password</td></tr>
+            </table>
+
+            <h4>cURL Example</h4>
+            <div class="code-block">
+curl -X POST http://localhost:3000/api/users \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "John Doe",
+    "email": "john@example.com",
+    "phone": "+1234567890",
+    "role": "customer",
+    "password": "password123"
+  }'
+            </div>
+
+            <h4>Success Response (201)</h4>
+            <div class="response success">
+{
+    "success": true,
+    "message": "User created successfully",
+    "data": {
+        "id": 6,
+        "name": "John Doe",
+        "email": "john@example.com",
+        "phone": "+1234567890",
+        "role": "customer",
+        "created_at": "2024-01-15T10:30:00.000Z"
+    }
+}
+            </div>
+
+            <h4>Error Responses</h4>
+            <div class="response error">
+400 Bad Request: Missing required fields<br>
+409 Conflict: Email already exists<br>
+500 Internal Server Error: Database error
+            </div>
+        </div>
+
+        <!-- Get All Users -->
+        <div class="endpoint" id="get-users">
+            <h3><span class="method GET">GET</span>/api/users</h3>
+            <p>Get all users</p>
+
+            <h4>cURL Example</h4>
+            <div class="code-block">
+curl -X GET http://localhost:3000/api/users
+            </div>
+
+            <h4>Success Response (200)</h4>
+            <div class="response success">
+{
+    "success": true,
+    "message": "Users retrieved successfully",
+    "data": [
+        {
+            "id": 1,
+            "name": "John Doe",
+            "email": "john@example.com",
+            "phone": "+1234567890",
+            "role": "customer",
+            "created_at": "2024-01-15T10:30:00.000Z"
+        },
+        {
+            "id": 2,
+            "name": "Jane Smith",
+            "email": "jane@example.com",
+            "phone": "+1234567891",
+            "role": "customer",
+            "created_at": "2024-01-15T10:25:00.000Z"
+        }
+    ]
+}
+            </div>
+        </div>
+
+        <!-- Get User by ID -->
+        <div class="endpoint">
+            <h3><span class="method GET">GET</span>/api/users/:id</h3>
+            <p>Get user by ID</p>
+
+            <h4>Parameters</h4>
+            <table>
+                <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+                <tr><td>id</td><td>integer</td><td class="required">Yes</td><td>User ID</td></tr>
+            </table>
+
+            <h4>cURL Example</h4>
+            <div class="code-block">
+curl -X GET http://localhost:3000/api/users/1
+            </div>
+
+            <h4>Success Response (200)</h4>
+            <div class="response success">
+{
+    "success": true,
+    "message": "User retrieved successfully",
+    "data": {
+        "id": 1,
+        "name": "John Doe",
+        "email": "john@example.com",
+        "phone": "+1234567890",
+        "role": "customer",
+        "created_at": "2024-01-15T10:30:00.000Z"
+    }
+}
+            </div>
+
+            <h4>Error Response (404)</h4>
+            <div class="response error">
+{
+    "success": false,
+    "message": "User not found"
+}
+            </div>
+        </div>
+
+        <!-- Update User -->
+        <div class="endpoint">
+            <h3><span class="method PUT">PUT</span>/api/users/:id</h3>
+            <p>Update user information</p>
+
+            <h4>Parameters</h4>
+            <table>
+                <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+                <tr><td>id</td><td>integer</td><td class="required">Yes</td><td>User ID</td></tr>
+            </table>
+
+            <h4>Request Body</h4>
+            <div class="code-block">
+{
+    "name": "John Smith",
+    "email": "johnsmith@example.com",
+    "phone": "+1234567899",
+    "role": "customer",
+    "password": "newpassword123"
+}
+            </div>
+
+            <h4>cURL Example</h4>
+            <div class="code-block">
+curl -X PUT http://localhost:3000/api/users/1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "John Smith",
+    "email": "johnsmith@example.com",
+    "phone": "+1234567899",
+    "role": "customer",
+    "password": "newpassword123"
+  }'
+            </div>
+
+            <h4>Success Response (200)</h4>
+            <div class="response success">
+{
+    "success": true,
+    "message": "User updated successfully",
+    "data": {
+        "id": 1,
+        "name": "John Smith",
+        "email": "johnsmith@example.com",
+        "phone": "+1234567899",
+        "role": "customer",
+        "created_at": "2024-01-15T10:30:00.000Z"
+    }
+}
+            </div>
+
+            <h4>Error Responses</h4>
+            <div class="response error">
+400 Bad Request: Missing required fields<br>
+404 Not Found: User not found<br>
+409 Conflict: Email already exists<br>
+500 Internal Server Error: Database error
+            </div>
+        </div>
+
+        <!-- Delete User -->
+        <div class="endpoint">
+            <h3><span class="method DELETE">DELETE</span>/api/users/:id</h3>
+            <p>Delete user by ID</p>
+
+            <h4>Parameters</h4>
+            <table>
+                <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+                <tr><td>id</td><td>integer</td><td class="required">Yes</td><td>User ID</td></tr>
+            </table>
+
+            <h4>cURL Example</h4>
+            <div class="code-block">
+curl -X DELETE http://localhost:3000/api/users/1
+            </div>
+
+            <h4>Success Response (200)</h4>
+            <div class="response success">
+{
+    "success": true,
+    "message": "User deleted successfully"
+}
+            </div>
+
+            <h4>Error Responses</h4>
+            <div class="response error">
+404 Not Found: User not found<br>
+500 Internal Server Error: Database error
+            </div>
+        </div>
+
+        <h2>Testing with Postman</h2>
+        <ol>
+            <li>Import this API documentation or create requests manually</li>
+            <li>Set base URL to <code>http://localhost:3000</code></li>
+            <li>Test each endpoint in order</li>
+            <li>Verify response codes and data structure</li>
+            <li>Test error scenarios (invalid IDs, missing fields, duplicate emails)</li>
+        </ol>
+
+        <h2>Common Response Format</h2>
+        <p>All API responses follow this structure:</p>
+        <div class="code-block">
+{
+    "success": boolean,     // true for success, false for error
+    "message": string,      // Response message
+    "data": object|array    // Response data (only on success)
+}
+        </div>
+
+        <h2>Error Handling</h2>
+        <ul>
+            <li><strong>400 Bad Request:</strong> Missing or invalid request data</li>
+            <li><strong>404 Not Found:</strong> Resource not found</li>
+            <li><strong>409 Conflict:</strong> Email already exists</li>
+            <li><strong>500 Internal Server Error:</strong> Server/database errors</li>
+        </ul>
+
+        <h2>Notes</h2>
+        <ul>
+            <li>Passwords are stored as plain text in this demo. In production, implement password hashing.</li>
+            <li>Consider adding authentication middleware for production use.</li>
+            <li>Add input validation and sanitization for security.</li>
+            <li>Implement rate limiting to prevent abuse.</li>
+        </ul>
+    </div>
+</body>
+</html>

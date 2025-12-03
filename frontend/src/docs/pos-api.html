@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant API - Point of Sale (POS) Documentation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            height: 100vh;
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            overflow-y: auto;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        }
+        .sidebar h2 {
+            margin-top: 0;
+            color: #ecf0f1;
+            font-size: 18px;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+        .sidebar li {
+            margin: 10px 0;
+        }
+        .sidebar a {
+            color: #bdc3c7;
+            text-decoration: none;
+            display: block;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+        .sidebar a:hover, .sidebar a.active {
+            background: #34495e;
+            color: #ecf0f1;
+        }
+        .main-content {
+            margin-left: 270px;
+            padding: 30px;
+            max-width: calc(100% - 320px);
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #2c3e50;
+        }
+        .endpoint {
+            background: #f8f9fa;
+            border-left: 4px solid #007bff;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .method {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 4px;
+            color: white;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .method.GET { background: #28a745; }
+        .method.POST { background: #007bff; }
+        .method.PUT { background: #ffc107; color: #212529; }
+        .method.DELETE { background: #dc3545; }
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+        .response {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success { border-left: 4px solid #28a745; }
+        .error { border-left: 4px solid #dc3545; }
+        .warning { border-left: 4px solid #ffc107; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #dee2e6;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background: #f8f9fa;
+            font-weight: bold;
+        }
+        .required {
+            color: #dc3545;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Navigation</h2>
+        <ul>
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#endpoints">API Endpoints</a></li>
+            <li><a href="#create-pos-order">POST /api/pos/order</a></li>
+            <li><a href="#get-active-orders">GET /api/pos/orders/active</a></li>
+            <li><a href="#close-pos-order">PUT /api/pos/orders/:id/close</a></li>
+            <li><a href="#testing">Testing</a></li>
+            <li><a href="#response-format">Response Format</a></li>
+            <li><a href="#error-handling">Error Handling</a></li>
+            <li><a href="#notes">Notes</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <div class="container">
+        <h1 id="overview">Restaurant API - Point of Sale (POS) Module</h1>
+
+        <p>This documentation covers the Point of Sale (POS) APIs for the Restaurant Backend API. All endpoints are prefixed with <code>/api/pos</code>.</p>
+
+        <h2>Base URL</h2>
+        <p><code>http://localhost:3000/api/pos</code></p>
+
+        <h2>Authentication</h2>
+        <p>Currently, no authentication is required for these endpoints. In production, implement proper authentication middleware.</p>
+
+        <h2 id="endpoints">API Endpoints</h2>
+
+        <!-- Create POS Order -->
+        <div class="endpoint" id="create-pos-order">
+            <h3><span class="method POST">POST</span>/api/pos/order</h3>
+            <p>Create a quick order directly, bypassing the cart system. This is intended for POS terminals where orders are immediately placed and often paid.</p>
+
+            <h4>Request Body</h4>
+            <div class="code-block">
+{
+    "user_id": 1,
+    "items": [
+        { "item_id": 1, "quantity": 2 },
+        { "item_id": 3, "quantity": 1 }
+    ],
+    "payment_method": "cash"
+}
+            </div>
+
+            <table>
+                <tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr>
+                <tr><td>user_id</td><td>integer</td><td class="required">Yes</td><td>The ID of the user placing the order.</td></tr>
+                <tr><td>items</td><td>array</td><td class="required">Yes</td><td>An array of objects, each containing <code>item_id</code> (integer) and <code>quantity</code> (integer).</td></tr>
+                <tr><td>payment_method</td><td>string</td><td class="required">Yes</td><td>The method of payment (e.g., "cash", "card").</td></tr>
+            </table>
+
+            <h4>cURL Example</h4>
+            <div class="code-block">
+curl -X POST http://localhost:3000/api/pos/order \
+  -H "Content-Type: application/json" \
+  -d 
+'{ 
+    "user_id": 1,
+    "items": [
+        { "item_id": 1, "quantity": 2 },
+        { "item_id": 3, "quantity": 1 }
+    ],
+    "payment_method": "cash"
+}'
+            </div>
+
+            <h4>Success Response (201)</h4>
+            <div class="response success">
+{
+    "success": true,
+    "message": "Quick order created and closed successfully.",
+    "data": {
+        "id": 101,
+        "user_id": 1,
+        "total_amount": "25.50",
+        "payment_method": "cash",
+        "status": "delivered",
+        "created_at": "2024-01-15T10:30:00.000Z"
+    }
+}
+            </div>
+
+            <h4>Error Responses</h4>
+            <div class="response error">
+400 Bad Request: Missing required fields, invalid item quantity, or empty items array.<br>
+404 Not Found: User not found or menu item not found/available.<br>
+500 Internal Server Error: Database error or other server issues.
+            </div>
+        </div>
+
+        <!-- Get Active Orders -->
+        <div class="endpoint" id="get-active-orders">
+            <h3><span class="method GET">GET</span>/api/pos/orders/active</h3>
+            <p>Retrieves all orders that are currently active (i.e., not yet 'delivered' or 'cancelled').</p>
+
+            <h4>cURL Example</h4>
+            <div class="code-block">
+curl -X GET http://localhost:3000/api/pos/orders/active
+            </div>
+
+            <h4>Success Response (200)</h4>
+            <div class="response success">
+{
+    "success": true,
+    "message": "Active orders retrieved successfully.",
+    "data": [
+        {
+            "id": 102,
+            "user_id": 2,
+            "total_amount": "15.00",
+            "payment_method": "card",
+            "status": "pending",
+            "created_at": "2024-01-15T11:00:00.000Z",
+            "user_name": "Jane Smith"
+        },
+        {
+            "id": 103,
+            "user_id": 1,
+            "total_amount": "30.25",
+            "payment_method": "cash",
+            "status": "preparing",
+            "created_at": "2024-01-15T10:45:00.000Z",
+            "user_name": "John Doe"
+        }
+    ]
+}
+            </div>
+            <h4>Error Responses</h4>
+            <div class="response error">
+500 Internal Server Error: Database error or other server issues.
+            </div>
+        </div>
+
+        <!-- Close POS Order -->
+        <div class="endpoint" id="close-pos-order">
+            <h3><span class="method PUT">PUT</span>/api/pos/orders/:id/close</h3>
+            <p>Marks an existing order as 'delivered' and implicitly 'paid'. This is used to finalize an order from the POS perspective.</p>
+
+            <h4>Parameters</h4>
+            <table>
+                <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+                <tr><td>id</td><td>integer</td><td class="required">Yes</td><td>The ID of the order to close.</td></tr>
+            </table>
+
+            <h4>cURL Example</h4>
+            <div class="code-block">
+curl -X PUT http://localhost:3000/api/pos/orders/102/close
+            </div>
+
+            <h4>Success Response (200)</h4>
+            <div class="response success">
+{
+    "success": true,
+    "message": "Order 102 closed successfully.",
+    "data": {
+        "id": 102,
+        "user_id": 2,
+        "total_amount": "15.00",
+        "payment_method": "card",
+        "status": "delivered",
+        "created_at": "2024-01-15T11:00:00.000Z"
+    }
+}
+            </div>
+
+            <h4>Error Responses</h4>
+            <div class="response error">
+400 Bad Request: Invalid order ID provided.<br>
+404 Not Found: Order not found.<br>
+500 Internal Server Error: Database error or other server issues.
+            </div>
+        </div>
+
+        <h2>Testing with Postman/cURL</h2>
+        <ol>
+            <li>Ensure the backend server is running.</li>
+            <li>Use the provided cURL examples or Postman to test each endpoint.</li>
+            <li>Verify response codes and data structure.</li>
+            <li>Test error scenarios (e.g., invalid order ID, non-existent user/menu item).</li>
+        </ol>
+
+        <h2>Common Response Format</h2>
+        <p>All API responses follow this structure:</p>
+        <div class="code-block">
+{
+    "success": boolean,     // true for success, false for error
+    "message": string,      // Response message
+    "data": object|array    // Response data (only on success)
+}
+        </div>
+
+        <h2>Error Handling</h2>
+        <ul>
+            <li><strong>400 Bad Request:</strong> Missing or invalid request data.</li>
+            <li><strong>404 Not Found:</strong> Resource not found.</li>
+            <li><strong>500 Internal Server Error:</strong> Server/database errors.</li>
+        </ul>
+
+        <h2>Notes</h2>
+        <ul>
+            <li>The <code>POST /api/pos/order</code> endpoint assumes immediate payment and marks the order as 'delivered' upon creation. Adjust this logic in <code>posController.js</code> if a different workflow is required (e.g., 'pending' status initially).</li>
+            <li>Consider adding authentication and authorization middleware for production use.</li>
+            <li>Implement robust input validation and sanitization for security.</li>
+        </ul>
+    </div>
+</body>
+</html>

@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant API - Cart Management Documentation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            height: 100vh;
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            overflow-y: auto;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        }
+        .sidebar h2 {
+            margin-top: 0;
+            color: #ecf0f1;
+            font-size: 18px;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+        .sidebar li {
+            margin: 10px 0;
+        }
+        .sidebar a {
+            color: #bdc3c7;
+            text-decoration: none;
+            display: block;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+        .sidebar a:hover, .sidebar a.active {
+            background: #34495e;
+            color: #ecf0f1;
+        }
+        .main-content {
+            margin-left: 270px;
+            padding: 30px;
+            max-width: calc(100% - 320px);
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #2c3e50;
+        }
+        .endpoint {
+            background: #f8f9fa;
+            border-left: 4px solid #007bff;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .method {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 4px;
+            color: white;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .method.GET { background: #28a745; }
+        .method.POST { background: #007bff; }
+        .method.PUT { background: #ffc107; color: #212529; }
+        .method.DELETE { background: #dc3545; }
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+        .response {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success { border-left: 4px solid #28a745; }
+        .error { border-left: 4px solid #dc3545; }
+        .warning { border-left: 4px solid #ffc107; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #dee2e6;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background: #f8f9fa;
+            font-weight: bold;
+        }
+        .required {
+            color: #dc3545;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Navigation</h2>
+        <ul>
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#endpoints">API Endpoints</a></li>
+            <li><a href="#add-item">POST /api/cart/:userId/add</a></li>
+            <li><a href="#get-cart">GET /api/cart/:userId</a></li>
+            <li><a href="#update-item">PUT /api/cart/:userId/update</a></li>
+            <li><a href="#remove-item">DELETE /api/cart/:userId/remove/:itemId</a></li>
+            <li><a href="#clear-cart">DELETE /api/cart/:userId/clear</a></li>
+            <li><a href="#testing">Testing</a></li>
+            <li><a href="#response-format">Response Format</a></li>
+            <li><a href="#error-handling">Error Handling</a></li>
+            <li><a href="#notes">Notes</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <div class="container">
+        <h1 id="overview">Restaurant API - Cart Management</h1>
+
+        <p>This documentation covers the Cart Management APIs for the Restaurant Backend API. All endpoints are prefixed with <code>/api/cart</code>.</p>
+
+        <h2>Base URL</h2>
+        <p><code>http://localhost:3000/api/cart</code></p>
+
+        <h2>Authentication</h2>
+        <p>Currently, no authentication is required for these endpoints. In production, implement proper authentication middleware.</p>
+
+        <h2>Features</h2>
+        <ul>
+            <li>Automatic cart creation for new users</li>
+            <li>Add, update, and remove items from cart</li>
+            <li>Calculate total price automatically</li>
+            <li>Return full item details (name, price, etc.)</li>
+            <li>Handle item availability validation</li>
+        </ul>
+
+        <h2 id="endpoints">API Endpoints</h2>
+
+        <!-- Add Item to Cart -->
+        <div class="endpoint" id="add-item">
+            <h3><span class="method POST">POST</span>/api/cart/:userId/add</h3>
+            <p>Add item to cart (auto-create cart if doesn't exist)</p>
+
+            <h4>URL Parameters</h4>
+            <table>
+                <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+                <tr><td>userId</td><td>integer</td><td class="required">Yes</td><td>User ID</td></tr>
+            </table>
+
+            <h4>Request Body</h4>
+            <div class="code-block">
+{
+    "item_id": 1,
+    "quantity": 2
+}
+            </div>
+
+            <table>
+                <tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr>
+                <tr><td>item_id</td><td>integer</td><td class="required">Yes</td><td>Menu item ID</td></tr>
+                <tr><td>quantity</td><td>integer</td><td class="required">Yes</td><td>Quantity to add (must be > 0)</td></tr>
+            </table>
+
+            <h4>cURL Example</h4>
+            <div class="code-block">
+curl -X POST http://localhost:3000/api/cart/1/add \
+  -H "Content-Type: application/json" \
+  -d '{
+    "item_id": 1,
+    "quantity": 2
+  }'
+            </div>
+
+            <h4>Success Response (200)</h4>
+            <div class="response success">
+{
+    "success": true,
+    "message": "Item added to cart successfully",
+    "data": {
+        "cartId": 1,
+        "items": [
+            {
+                "item_id": 1,
+                "quantity": 2,
+                "name": "Margherita Pizza",
+                "price": "12.99",
+                "description": "Classic pizza with tomato sauce, mozzarella, and basil",
+                "category": "Pizza",
+                "type": "food",
+                "availability": true
+            }
+        ],
+        "total": "25.98"
+    }
+}
+            </div>
+
+            <h4>Error Responses</h4>
+            <div class="response error">
+400 Bad Request: Missing required fields or invalid quantity<br>
+404 Not Found: User not found or menu item not found or not available<br>
+500 Internal Server Error: Database error
+            </div>
+        </div>
+
+        <!-- Get User's Cart -->
+        <div class="endpoint" id="get-cart">
+            <h3><span class="method GET">GET</span>/api/cart/:userId</h3>
+            <p>Get user's cart with items and total price</p>
+
+            <h4>URL Parameters</h4>
+            <table>
+                <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+                <tr><td>userId</td><td>integer</td><td class="required">Yes</td><td>User ID</td></tr>
+            </table>
+
+            <h4>cURL Example</h4>
+            <div class="code-block">
+curl -X GET http://localhost:3000/api/cart/1
+            </div>
+
+            <h4>Success Response (200)</h4>
+            <div class="response success">
+{
+    "success": true,
+    "message": "Cart retrieved successfully",
+    "data": {
+        "cartId": 1,
+        "items": [
+            {
+                "item_id": 1,
+                "quantity": 2,
+                "name": "Margherita Pizza",
+                "price": "12.99",
+                "description": "Classic pizza with tomato sauce, mozzarella, and basil",
+                "category": "Pizza",
+                "type": "food",
+                "availability": true
+            },
+            {
+                "item_id": 2,
+                "quantity": 1,
+                "name": "Coca Cola",
+                "price": "2.99",
+                "description": "Classic cola drink",
+                "category": "Beverages",
+                "type": "drink",
+                "availability": true
+            }
+        ],
+        "total": "28.97"
+    }
+}
+            </div>
+
+            <h4>Empty Cart Response</h4>
+            <div class="response success">
+{
+    "success": true,
+    "message": "Cart retrieved successfully",
+    "data": {
+        "cartId": 1,
+        "items": [],
+        "total": "0.00"
+    }
+}
+            </div>
+        </div>
+
+        <!-- Update Item Quantity -->
+        <div class="endpoint" id="update-item">
+            <h3><span class="method PUT">PUT</span>/api/cart/:userId/update</h3>
+            <p>Update item quantity in cart</p>
+
+            <h4>URL Parameters</h4>
+            <table>
+                <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+                <tr><td>userId</td><td>integer</td><td class="required">Yes</td><td>User ID</td></tr>
+            </table>
+
+            <h4>Request Body</h4>
+            <div class="code-block">
+{
+    "item_id": 1,
+    "quantity": 3
+}
+            </div>
+
+            <table>
+                <tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr>
+                <tr><td>item_id</td><td>integer</td><td class="required">Yes</td><td>Menu item ID</td></tr>
+                <tr><td>quantity</td><td>integer</td><td class="required">Yes</td><td>New quantity (0 to remove item)</td></tr>
+            </table>
+
+            <h4>cURL Example</h4>
+            <div class="code-block">
+curl -X PUT http://localhost:3000/api/cart/1/update \
+  -H "Content-Type: application/json" \
+  -d '{
+    "item_id": 1,
+    "quantity": 3
+  }'
+            </div>
+
+            <h4>Success Response (200)</h4>
+            <div class="response success">
+{
+    "success": true,
+    "message": "Cart item updated successfully",
+    "data": {
+        "cartId": 1,
+        "items": [
+            {
+                "item_id": 1,
+                "quantity": 3,
+                "name": "Margherita Pizza",
+                "price": "12.99",
+                "description": "Classic pizza with tomato sauce, mozzarella, and basil",
+                "category": "Pizza",
+                "type": "food",
+                "availability": true
+            }
+        ],
+        "total": "38.97"
+    }
+}
+            </div>
+
+            <h4>Error Responses</h4>
+            <div class="response error">
+400 Bad Request: Missing required fields or invalid quantity<br>
+404 Not Found: User not found<br>
+500 Internal Server Error: Database error
+            </div>
+        </div>
+
+        <!-- Remove Item from Cart -->
+        <div class="endpoint" id="remove-item">
+            <h3><span class="method DELETE">DELETE</span>/api/cart/:userId/remove/:itemId</h3>
+            <p>Remove item from cart</p>
+
+            <h4>URL Parameters</h4>
+            <table>
+                <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+                <tr><td>userId</td><td>integer</td><td class="required">Yes</td><td>User ID</td></tr>
+                <tr><td>itemId</td><td>integer</td><td class="required">Yes</td><td>Menu item ID to remove</td></tr>
+            </table>
+
+            <h4>cURL Example</h4>
+            <div class="code-block">
+curl -X DELETE http://localhost:3000/api/cart/1/remove/1
+            </div>
+
+            <h4>Success Response (200)</h4>
+            <div class="response success">
+{
+    "success": true,
+    "message": "Item removed from cart successfully",
+    "data": {
+        "cartId": 1,
+        "items": [],
+        "total": "0.00"
+    }
+}
+            </div>
+
+            <h4>Error Responses</h4>
+            <div class="response error">
+500 Internal Server Error: Database error
+            </div>
+        </div>
+
+        <!-- Clear Entire Cart -->
+        <div class="endpoint" id="clear-cart">
+            <h3><span class="method DELETE">DELETE</span>/api/cart/:userId/clear</h3>
+            <p>Clear entire cart</p>
+
+            <h4>URL Parameters</h4>
+            <table>
+                <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+                <tr><td>userId</td><td>integer</td><td class="required">Yes</td><td>User ID</td></tr>
+            </table>
+
+            <h4>cURL Example</h4>
+            <div class="code-block">
+curl -X DELETE http://localhost:3000/api/cart/1/clear
+            </div>
+
+            <h4>Success Response (200)</h4>
+            <div class="response success">
+{
+    "success": true,
+    "message": "Cart cleared successfully",
+    "data": {
+        "cartId": 1,
+        "items": [],
+        "total": "0.00"
+    }
+}
+            </div>
+
+            <h4>Error Responses</h4>
+            <div class="response error">
+500 Internal Server Error: Database error
+            </div>
+        </div>
+
+        <h2>Testing with Postman</h2>
+        <ol>
+            <li>Import this API documentation or create requests manually</li>
+            <li>Set base URL to <code>http://localhost:3000</code></li>
+            <li>Test each endpoint in order</li>
+            <li>Verify response codes and data structure</li>
+            <li>Test error scenarios (invalid user IDs, item IDs, quantities)</li>
+            <li>Verify automatic cart creation for new users</li>
+            <li>Check total price calculations</li>
+        </ol>
+
+        <h2>Common Response Format</h2>
+        <p>All API responses follow this structure:</p>
+        <div class="code-block">
+{
+    "success": boolean,     // true for success, false for error
+    "message": string,      // Response message
+    "data": object          // Response data (only on success)
+}
+        </div>
+
+        <h2>Cart Data Structure</h2>
+        <p>The cart data includes:</p>
+        <ul>
+            <li><strong>cartId:</strong> Unique cart identifier</li>
+            <li><strong>items:</strong> Array of cart items with full menu details</li>
+            <li><strong>total:</strong> Calculated total price (string format)</li>
+        </ul>
+
+        <h2>Error Handling</h2>
+        <ul>
+            <li><strong>400 Bad Request:</strong> Missing or invalid request data</li>
+            <li><strong>404 Not Found:</strong> Menu item not found or not available</li>
+            <li><strong>500 Internal Server Error:</strong> Server/database errors</li>
+        </ul>
+
+        <h2>Notes</h2>
+        <ul>
+            <li>Carts are created automatically when a user adds their first item</li>
+            <li>Item availability is checked before adding to cart</li>
+            <li>Setting quantity to 0 in update removes the item from cart</li>
+            <li>Total price is calculated automatically and returned as a string</li>
+            <li>All cart operations return the updated cart data</li>
+            <li>Consider adding cart persistence across sessions in production</li>
+            <li>Implement proper user authentication and authorization</li>
+        </ul>
+    </div>
+</body>
+</html>
